@@ -29,7 +29,7 @@ public class AccountRepository : IAccountRepository
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<Account?> GetByClientIdAsync(int clientId)
+    public async Task<Account?> GetByClientIdAsync(string clientId)
     {
         return await _dbContext.Accounts
             .AsNoTracking()

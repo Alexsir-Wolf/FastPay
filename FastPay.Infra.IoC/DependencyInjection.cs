@@ -15,7 +15,10 @@ public static class DependencyInjection
         var connectionString = configuration["Settings:PostgresSettings:ConnectionString"];
 
         services.AddDbContext<FastPayDbContext>(options =>
-            options.UseNpgsql(connectionString));
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history");
+            }));
 
         services.AddScoped<IAccountRepository, AccountRepository>();
 

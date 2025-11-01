@@ -6,10 +6,11 @@ using FastPay.Domain.Entities;
 using FastPay.Domain.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using FastPay.Application.Accounts.Commands;
 
-namespace FastPay.Application.Accounts.Commands.CreateAccount;
+namespace FastPay.Application.Accounts.Handlers;
 
-public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, CommandResult<AccountDto>>
+public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, CommandResult<CreateAccountDto>>
 {
     private readonly IAccountRepository _accountRepository;
     private readonly ILogger<CreateAccountHandler> _logger;
@@ -20,7 +21,7 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Comman
         _logger = logger;
     }
 
-    public async Task<CommandResult<AccountDto>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult<CreateAccountDto>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Criando nova conta para o cliente {ClientId}", request.ClientId);
 
@@ -40,6 +41,6 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Comman
 
         var dto = account.ToAccountDto();
 
-        return CommandResult<AccountDto>.Ok(dto, "Conta criada com sucesso.");
+        return CommandResult<CreateAccountDto>.Ok(dto, "Conta criada com sucesso.");
     }
 }

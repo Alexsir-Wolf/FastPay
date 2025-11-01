@@ -7,7 +7,7 @@ public interface IAccountRepository
     IUnitOfWork UnitOfWork { get; }
 
     Task<Account?> GetByIdAsync(int id);
-    Task<Account?> GetByClientIdAsync(int clientId);
+    Task<Account?> GetByClientIdAsync(string clientId);
     Task AddAsync(Account account);
     Task UpdateAsync(Account account);
 }

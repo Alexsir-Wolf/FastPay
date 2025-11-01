@@ -6,22 +6,24 @@ namespace FastPay.Domain.Entities;
 
 public class Account : Entity<int>
 {
-    public int ClientId { get; private set; }
-    public Money AvailableBalance { get; private set; }
-    public Money ReservedBalance { get; private set; }
-    public Money CreditLimit { get; private set; }
-    public AccountStatus Status { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-
-    private Account() { }
-
-    public Account(int clientId, Money initialBalance, Money creditLimit)
+    private Account() 
+    {
+    }
+    public Account(string clientId, Money initialBalance, Money creditLimit)
     {
         ClientId = clientId;
         AvailableBalance = initialBalance ?? Money.Zero();
         ReservedBalance = Money.Zero();
         CreditLimit = creditLimit ?? Money.Zero();
         Status = AccountStatus.Active;
-        CreatedAt = DateTime.UtcNow;
     }
+
+    public string ClientId { get; private set; }
+    public Money AvailableBalance { get; private set; }
+    public Money ReservedBalance { get; private set; }
+    public Money CreditLimit { get; private set; }
+    public AccountStatus Status { get; private set; }
+
+    public IReadOnlyCollection<Transaction> Transactions => _transactions.AsReadOnly();
+    private readonly List<Transaction> _transactions = new(); 
 }

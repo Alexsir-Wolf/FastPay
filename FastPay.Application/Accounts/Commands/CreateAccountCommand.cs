@@ -5,8 +5,8 @@ using MediatR;
 namespace FastPay.Application.Accounts.Commands;
 
 public record CreateAccountCommand(
-    int ClientId,
+    string ClientId,
     decimal InitialBalance,
-    decimal CreditLimit) : IRequest<CommandResult<AccountDto>>
+    decimal CreditLimit) : IRequest<CommandResult<CreateAccountDto>>
 {
 }
