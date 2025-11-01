@@ -1,3 +1,19 @@
 <Solution>
-  <Project Path="FastPay.Api/FastPay.Api.csproj" />
+  <Folder Name="/1 - Presentation/">
+    <Project Path="FastPay.Api/FastPay.Api.csproj" />
+  </Folder>
+  <Folder Name="/2 - Application/">
+    <Project Path="FastPay.Application/FastPay.Application.csproj" />
+  </Folder>
+  <Folder Name="/3 - Domain/">
+    <Project Path="FastPay.Domain/FastPay.Domain.csproj" />
+  </Folder>
+  <Folder Name="/4 - Infra/" />
+  <Folder Name="/4 - Infra/4.1 - CrossCutting/">
+    <Project Path="FastPay.Infra.IoC/FastPay.Infra.IoC.csproj" />
+  </Folder>
+  <Folder Name="/4 - Infra/4.2 - Data/">
+    <Project Path="FastPay.Infra.Data/FastPay.Infra.Data.csproj" />
+  </Folder>
+  <Folder Name="/5 - Tests/" />
 </Solution>
