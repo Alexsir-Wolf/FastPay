@@ -25,9 +25,6 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             m.Property(p => p.Amount)
                 .HasColumnName("available_balance")
                 .HasPrecision(18, 2);
-            m.Property(p => p.Currency)
-                .HasColumnName("currency")
-                .HasMaxLength(3);
         });
 
         builder.OwnsOne(a => a.ReservedBalance, m =>
@@ -35,8 +32,6 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             m.Property(p => p.Amount)
                 .HasColumnName("reserved_balance")
                 .HasPrecision(18, 2);
-            m.Property(p => p.Currency)
-                .HasColumnName("reserved_balance_currency");
         });
 
         builder.OwnsOne(a => a.CreditLimit, m =>
@@ -44,9 +39,12 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             m.Property(p => p.Amount)
                 .HasColumnName("credit_limit")
                 .HasPrecision(18, 2);
-            m.Property(p => p.Currency)
-                .HasColumnName("credit_limit_currency");
         });
+
+        builder.Property(a => a.Currency)
+            .HasColumnName("currency")
+            .HasMaxLength(3)
+            .IsRequired();
 
         builder.Property(a => a.Status)
             .HasColumnName("status")
@@ -64,5 +62,8 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .WithOne()
             .HasForeignKey(t => t.AccountId)
             .HasPrincipalKey(a => a.Id);
+
+        builder.HasIndex(a => new { a.ClientId, a.Currency })
+            .IsUnique();
     }
 }

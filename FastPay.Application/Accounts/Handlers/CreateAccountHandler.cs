@@ -7,6 +7,7 @@ using FastPay.Domain.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using FastPay.Application.Accounts.Commands;
+using FastPay.Domain.Enums;
 
 namespace FastPay.Application.Accounts.Handlers;
 
@@ -25,8 +26,16 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Comman
     {
         _logger.LogInformation("Criando nova conta para o cliente {ClientId}", request.ClientId);
 
+        var existing = await _accountRepository.GetByClientAndCurrencyAsync(request.ClientId, request.Currency);
+        if (existing is not null)
+        { 
+            if (existing.Status != AccountStatus.Blocked)            
+                return CommandResult<CreateAccountDto>.Fail(new[] { $"Já existe uma conta ativa para esta moeda." });            
+        }
+
         var account = new Account(
             clientId: request.ClientId,
+            currency: request.Currency,
             initialBalance: new Money(request.InitialBalance),
             creditLimit: new Money(request.CreditLimit)
         );
@@ -39,7 +48,7 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Comman
             "Conta criada com sucesso para o cliente {ClientId} (AccountId: {AccountId})",
             request.ClientId, account.Id);
 
-        var dto = account.ToAccountDto();
+        var dto = account.ToCreateAccountDto();
 
         return CommandResult<CreateAccountDto>.Ok(dto, "Conta criada com sucesso.");
     }

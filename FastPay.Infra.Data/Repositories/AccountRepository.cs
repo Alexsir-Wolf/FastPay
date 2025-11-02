@@ -29,11 +29,44 @@ public class AccountRepository : IAccountRepository
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<Account?> GetByClientIdAsync(string clientId)
+    public async Task<IEnumerable<Account>> GetByClientIdAsync(string clientId)
     {
         return await _dbContext.Accounts
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.ClientId == clientId);
+            .Where(a => a.ClientId == clientId)
+            .ToListAsync();
+    }
+
+    public async Task<Account?> GetByClientAndCurrencyAsync(string clientId, string currency)
+    {
+        return await _dbContext.Accounts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.ClientId == clientId && a.Currency == currency);
+    }
+
+    public async Task<IReadOnlyList<Account>> ListAsync(string? clientId, int page, int pageSize)
+    {
+        var query = _dbContext.Accounts.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(clientId))
+            query = query.Where(a => a.ClientId == clientId);
+
+        if (page <= 0) page = 1;
+        if (pageSize <= 0) pageSize = 10;
+
+        return await query
+            .OrderBy(a => a.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountAsync(string? clientId)
+    {
+        var query = _dbContext.Accounts.AsNoTracking().AsQueryable();
+        if (!string.IsNullOrWhiteSpace(clientId))
+            query = query.Where(a => a.ClientId == clientId);
+        return await query.CountAsync();
     }
 
     public async Task UpdateAsync(Account account)

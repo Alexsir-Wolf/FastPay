@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastPay.Infra.Data.Migrations
 {
     [DbContext(typeof(FastPayDbContext))]
-    [Migration("20251101192902_Initial")]
+    [Migration("20251102193026_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -43,6 +43,12 @@ namespace FastPay.Infra.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer")
                         .HasColumnName("status");
@@ -52,6 +58,9 @@ namespace FastPay.Infra.Data.Migrations
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId", "Currency")
+                        .IsUnique();
 
                     b.ToTable("accounts", (string)null);
                 });
@@ -105,12 +114,6 @@ namespace FastPay.Infra.Data.Migrations
                                 .HasColumnType("numeric(18,2)")
                                 .HasColumnName("available_balance");
 
-                            b1.Property<string>("Currency")
-                                .IsRequired()
-                                .HasMaxLength(3)
-                                .HasColumnType("character varying(3)")
-                                .HasColumnName("currency");
-
                             b1.HasKey("AccountId");
 
                             b1.ToTable("accounts");
@@ -129,11 +132,6 @@ namespace FastPay.Infra.Data.Migrations
                                 .HasColumnType("numeric(18,2)")
                                 .HasColumnName("credit_limit");
 
-                            b1.Property<string>("Currency")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("credit_limit_currency");
-
                             b1.HasKey("AccountId");
 
                             b1.ToTable("accounts");
@@ -151,11 +149,6 @@ namespace FastPay.Infra.Data.Migrations
                                 .HasPrecision(18, 2)
                                 .HasColumnType("numeric(18,2)")
                                 .HasColumnName("reserved_balance");
-
-                            b1.Property<string>("Currency")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("reserved_balance_currency");
 
                             b1.HasKey("AccountId");
 
