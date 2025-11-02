@@ -28,6 +28,12 @@ public class AccountsV1EndPoints : CarterModule
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
+
+        app.MapGet("/", ListAccounts)
+            .WithSummary("Lista contas")
+            .WithDescription("Lista contas com filtro opcional por clientId e paginação.")
+            .Produces(StatusCodes.Status200OK)
+            .WithOpenApi();
     }
 
     private async Task<IResult> CreateAccount(
@@ -53,6 +59,17 @@ public class AccountsV1EndPoints : CarterModule
         if (!result.Success)
             return Results.NotFound(result);
 
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> ListAccounts(
+        [FromQuery] string? clientId,
+        [FromQuery] int page,
+        [FromQuery] int pageSize,
+        [FromServices] IMediator mediator)
+    {
+        var query = new ListAccountsQuery(clientId, page, pageSize);
+        var result = await mediator.Send(query);
         return Results.Ok(result);
     }
 }
