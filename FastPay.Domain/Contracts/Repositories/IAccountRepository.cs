@@ -7,7 +7,7 @@ public interface IAccountRepository
     IUnitOfWork UnitOfWork { get; }
 
     Task<Account?> GetByIdAsync(int id);
-    Task<Account?> GetByClientIdAsync(string clientId);
+    Task<IEnumerable<Account?>> GetByClientIdAsync(string clientId);
     Task<Account?> GetByClientAndCurrencyAsync(string clientId, string currency);
     Task<IReadOnlyList<Account>> ListAsync(string? clientId, int page, int pageSize);
     Task<int> CountAsync(string? clientId);

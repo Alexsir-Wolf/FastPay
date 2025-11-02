@@ -30,6 +30,13 @@ public class AccountsV1EndPoints : CarterModule
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
+        app.MapGet("/{clientId}", GetAccountByClientId)
+            .WithSummary("Busca uma conta pelo Id do Cliente")
+            .WithDescription("Busca uma conta pelo Id do Cliente.")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithOpenApi();
+
         app.MapGet("/", ListAccounts)
             .WithSummary("Lista contas")
             .WithDescription("Lista contas com filtro opcional por clientId e paginação.")
@@ -63,6 +70,19 @@ public class AccountsV1EndPoints : CarterModule
         [FromServices] IMediator mediator)
     {
         var query = new GetAccountByIdQuery(id);
+        var result = await mediator.Send(query);
+
+        if (!result.Success)
+            return Results.NotFound(result);
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetAccountByClientId(
+    [FromRoute] string clientId,
+    [FromServices] IMediator mediator)
+    {
+        var query = new GetAccountByClientIdQuery(clientId);
         var result = await mediator.Send(query);
 
         if (!result.Success)

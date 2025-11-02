@@ -29,11 +29,12 @@ public class AccountRepository : IAccountRepository
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 
-    public async Task<Account?> GetByClientIdAsync(string clientId)
+    public async Task<IEnumerable<Account>> GetByClientIdAsync(string clientId)
     {
         return await _dbContext.Accounts
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.ClientId == clientId);
+            .Where(a => a.ClientId == clientId)
+            .ToListAsync();
     }
 
     public async Task<Account?> GetByClientAndCurrencyAsync(string clientId, string currency)
