@@ -28,4 +28,10 @@ public class Account : Entity<int>
 
     public IReadOnlyCollection<Transaction> Transactions => _transactions.AsReadOnly();
     private readonly List<Transaction> _transactions = new(); 
+
+    public void ChangeStatus(AccountStatus status)
+    {
+        Status = status;
+        MarkUpdated();
+    }
 }

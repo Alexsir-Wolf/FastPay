@@ -20,10 +20,8 @@ public sealed class GetAccountByIdHandler : IRequestHandler<GetAccountByIdQuery,
     {
         var account = await _accountRepository.GetByIdAsync(request.AccountId);
 
-        if (account is null)
-        {
-            return CommandResult<AccountDto>.Fail(["Conta não encontrada."]);
-        }
+        if (account is null)        
+            return CommandResult<AccountDto>.Fail(["Conta não encontrada."]);        
 
         var dto = account.ToAccountDto();
         return CommandResult<AccountDto>.Ok(dto, "Conta encontrada.");

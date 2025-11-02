@@ -1,8 +1,9 @@
-﻿using Carter;
+using Carter;
 using FastPay.Application.Accounts.Commands;
 using FastPay.Application.Accounts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using FastPay.Domain.Enums;
 
 namespace FastPay.Api.EndPoints.V1;
 
@@ -33,6 +34,14 @@ public class AccountsV1EndPoints : CarterModule
             .WithSummary("Lista contas")
             .WithDescription("Lista contas com filtro opcional por clientId e paginação.")
             .Produces(StatusCodes.Status200OK)
+            .WithOpenApi();
+
+        app.MapPut("/{id:int}/status", UpdateAccountStatus)
+            .WithSummary("Atualiza o status da conta")
+            .WithDescription("Atualiza o status (Active, Blocked, Inactive) da conta informada.")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
     }
 
@@ -70,6 +79,21 @@ public class AccountsV1EndPoints : CarterModule
     {
         var query = new ListAccountsQuery(clientId, page, pageSize);
         var result = await mediator.Send(query);
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> UpdateAccountStatus(
+        [FromRoute] int id,
+        [FromBody] UpdateAccountStatusRequest request,
+        [FromServices] IMediator mediator) 
+    {  
+
+        var command = new UpdateAccountStatusCommand(id, request.Status);
+        var result = await mediator.Send(command);
+       
+        if (!result.Success)
+            return Results.BadRequest(result);
+
         return Results.Ok(result);
     }
 }

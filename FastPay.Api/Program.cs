@@ -1,6 +1,7 @@
 using Carter;
 using FastPay.Infra.IoC;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,11 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "API financeira do FastPay - operações atômicas e seguras."
     });
+});
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
 var app = builder.Build();
