@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using FluentValidation;
+using MediatR;
+using FastPay.Application.Common.Behaviors;
 
 namespace FastPay.Infra.IoC;
 
@@ -26,6 +29,10 @@ public static class DependencyInjection
 
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(Assembly.Load("FastPay.Application")));
+
+        services.AddValidatorsFromAssembly(Assembly.Load("FastPay.Application"));
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         return services;
     }

@@ -5,7 +5,7 @@ namespace FastPay.Application.Accounts.Mappings;
 
 public static class AccountMappings
 {
-    public static CreateAccountDto ToAccountDto(this Account account)
+    public static CreateAccountDto ToCreateAccountDto(this Account account)
     {
         return new CreateAccountDto
         {
