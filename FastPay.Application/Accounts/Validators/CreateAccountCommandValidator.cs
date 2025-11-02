@@ -1,5 +1,6 @@
 using FluentValidation;
 using FastPay.Application.Accounts.Commands;
+using FastPay.Domain.Constants;
 
 namespace FastPay.Application.Accounts.Validators;
 
@@ -17,6 +18,11 @@ public sealed class CreateAccountCommandValidator : AbstractValidator<CreateAcco
 
         RuleFor(x => x.CreditLimit)
             .GreaterThanOrEqualTo(0).WithMessage("Limite de crédito não pode ser negativo.");
+
+        RuleFor(x => x.Currency)
+            .NotEmpty().WithMessage("Currency é obrigatório.")
+            .Must(c => new[] { CurrencyCodes.BRL, CurrencyCodes.USD, CurrencyCodes.EUR }
+                .Contains(c.ToUpperInvariant()))
+            .WithMessage("Moeda inválida. Use BRL, USD ou EUR.");
     }
 }
-

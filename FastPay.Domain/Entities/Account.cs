@@ -9,9 +9,10 @@ public class Account : Entity<int>
     private Account() 
     {
     }
-    public Account(string clientId, Money initialBalance, Money creditLimit)
+    public Account(string clientId, string currency, Money initialBalance, Money creditLimit)
     {
         ClientId = clientId;
+        Currency = currency.ToUpperInvariant();
         AvailableBalance = initialBalance ?? Money.Zero();
         ReservedBalance = Money.Zero();
         CreditLimit = creditLimit ?? Money.Zero();
@@ -19,6 +20,7 @@ public class Account : Entity<int>
     }
 
     public string ClientId { get; private set; }
+    public string Currency { get; private set; }
     public Money AvailableBalance { get; private set; }
     public Money ReservedBalance { get; private set; }
     public Money CreditLimit { get; private set; }

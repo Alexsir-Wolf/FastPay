@@ -14,7 +14,7 @@ public static class AccountMappings
             AvailableBalance = account.AvailableBalance.Amount,
             ReservedBalance = account.ReservedBalance.Amount,
             CreditLimit = account.CreditLimit.Amount,
-            Currency = account.AvailableBalance.Currency,
+            Currency = account.Currency,
             Status = account.Status.ToString(),
             CreatedAt = account.CreatedAt
         };

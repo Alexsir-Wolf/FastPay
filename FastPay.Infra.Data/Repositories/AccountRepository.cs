@@ -36,6 +36,13 @@ public class AccountRepository : IAccountRepository
             .FirstOrDefaultAsync(a => a.ClientId == clientId);
     }
 
+    public async Task<Account?> GetByClientAndCurrencyAsync(string clientId, string currency)
+    {
+        return await _dbContext.Accounts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.ClientId == clientId && a.Currency == currency);
+    }
+
     public async Task UpdateAsync(Account account)
     {
         _dbContext.Accounts.Update(account);
