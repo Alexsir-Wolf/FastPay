@@ -1,7 +1,8 @@
 ﻿using Carter;
+using FastPay.Application.Accounts.Commands;
+using FastPay.Application.Accounts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using FastPay.Application.Accounts.Commands;
 
 namespace FastPay.Api.EndPoints.V1;
 
@@ -15,8 +16,17 @@ public class AccountsV1EndPoints : CarterModule
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/", CreateAccount)
+            .WithSummary("Cria uma nova conta")
+            .WithDescription("Cria uma conta informando clienteId, saldo inicial e limite inicial e moeda.")
             .Produces(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
+
+        app.MapGet("/{id:int}", GetAccountById)
+            .WithSummary("Busca uma conta pelo Id")
+            .WithDescription("Busca uma conta pelo seu identificador único.")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
     }
 
@@ -32,4 +42,17 @@ public class AccountsV1EndPoints : CarterModule
         var location = $"/api/v1/accounts/{result.Data?.Id}";
         return Results.Created(location, result);
     }    
+
+    private static async Task<IResult> GetAccountById(
+        [FromRoute] int id,
+        [FromServices] IMediator mediator)
+    {
+        var query = new GetAccountByIdQuery(id);
+        var result = await mediator.Send(query);
+
+        if (!result.Success)
+            return Results.NotFound(result);
+
+        return Results.Ok(result);
+    }
 }

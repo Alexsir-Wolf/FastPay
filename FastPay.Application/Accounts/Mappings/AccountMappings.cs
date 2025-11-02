@@ -5,6 +5,21 @@ namespace FastPay.Application.Accounts.Mappings;
 
 public static class AccountMappings
 {
+    public static AccountDto ToAccountDto(this Account account)
+    {
+        return new AccountDto
+        {
+            Id = account.Id,
+            ClientId = account.ClientId,
+            Currency = account.Currency,
+            AvailableBalance = account.AvailableBalance.Amount,
+            ReservedBalance = account.ReservedBalance.Amount,
+            CreditLimit = account.CreditLimit.Amount,
+            Status = account.Status.ToString(),
+            CreatedAt = account.CreatedAt
+        };
+    }
+
     public static CreateAccountDto ToCreateAccountDto(this Account account)
     {
         return new CreateAccountDto
