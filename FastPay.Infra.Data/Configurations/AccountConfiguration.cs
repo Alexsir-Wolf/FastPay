@@ -41,6 +41,13 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
                 .HasPrecision(18, 2);
         });
 
+        builder.OwnsOne(a => a.UsedCredit, m =>
+        {
+            m.Property(p => p.Amount)
+                .HasColumnName("used_credit")
+                .HasPrecision(18, 2);
+        });
+
         builder.Property(a => a.Currency)
             .HasColumnName("currency")
             .HasMaxLength(3)
