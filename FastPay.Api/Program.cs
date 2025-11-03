@@ -2,45 +2,87 @@ using Carter;
 using FastPay.Infra.IoC;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddCarter();
-builder.Services.AddSwaggerGen(c =>
+try
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
+    Log.Information("FastPay API - Iniciado");
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Host.UseSerilog((ctx, services, cfg) =>
     {
-        Title = "FastPay API",
-        Version = "v1",
-        Description = "API financeira do FastPay - operações atômicas e seguras."
+        cfg
+            .ReadFrom.Configuration(ctx.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext();
+
+        var pgConn = ctx.Configuration["Settings:PostgresSettings:ConnectionString"];
+        if (!string.IsNullOrWhiteSpace(pgConn))
+        {
+            cfg.WriteTo.PostgreSQL(
+                connectionString: pgConn,
+                tableName: "fast_pay_logs",
+                needAutoCreateTable: true
+            );
+        }
     });
-});
 
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    // Services
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddCarter();
+    builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "FastPay API v1");
-        c.RoutePrefix = "swagger";
+        c.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "FastPay API",
+            Version = "v1",
+            Description = "API financeira do FastPay - operações atômicas e seguras."
+        });
     });
+
+    builder.Services.ConfigureHttpJsonOptions(options =>
+    {
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+    var app = builder.Build();
+
+    //logging
+    app.UseSerilogRequestLogging(options =>
+    {
+        options.EnrichDiagnosticContext = (diagCtx, http) =>
+        {
+            diagCtx.Set("TraceIdentifier", http.TraceIdentifier);
+            diagCtx.Set("UserAgent", http.Request.Headers.UserAgent.ToString());
+        };
+    });
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "FastPay API v1");
+            c.RoutePrefix = "swagger";
+        });
+    }
+
+    app.UseHttpsRedirection();
+    app.MapCarter();
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-
-app.MapCarter();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "FastPay API - Crashou");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+  

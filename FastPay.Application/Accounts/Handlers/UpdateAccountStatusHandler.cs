@@ -3,6 +3,7 @@ using FastPay.Application.Accounts.Dtos;
 using FastPay.Application.Accounts.Mappings;
 using FastPay.Application.Common;
 using FastPay.Domain.Contracts.Repositories;
+using Microsoft.Extensions.Logging;
 using MediatR;
 
 namespace FastPay.Application.Accounts.Handlers;
@@ -10,10 +11,12 @@ namespace FastPay.Application.Accounts.Handlers;
 public sealed class UpdateAccountStatusHandler : IRequestHandler<UpdateAccountStatusCommand, CommandResult<AccountDto>>
 {
     private readonly IAccountRepository _accountRepository;
+    private readonly ILogger<UpdateAccountStatusHandler> _logger;
 
-    public UpdateAccountStatusHandler(IAccountRepository accountRepository)
+    public UpdateAccountStatusHandler(IAccountRepository accountRepository, ILogger<UpdateAccountStatusHandler> logger)
     {
         _accountRepository = accountRepository;
+        _logger = logger;
     }
 
     public async Task<CommandResult<AccountDto>> Handle(
@@ -30,6 +33,8 @@ public sealed class UpdateAccountStatusHandler : IRequestHandler<UpdateAccountSt
         await _accountRepository.UpdateAsync(account);
 
         await _accountRepository.UnitOfWork.CommitAsync(cancellationToken);
+
+        _logger.LogInformation("Status da conta de {ClientId} alterado para {Status}", account.ClientId, account.Status.ToString());
 
         var dto = account.ToAccountDto();
         return CommandResult<AccountDto>.Ok(dto, "Conta encontrada.");
