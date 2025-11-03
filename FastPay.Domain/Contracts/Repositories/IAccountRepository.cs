@@ -6,12 +6,12 @@ public interface IAccountRepository
 {
     IUnitOfWork UnitOfWork { get; }
 
-    Task<Account?> GetByIdAsync(int id);
-    Task<IEnumerable<Account?>> GetByClientIdAsync(string clientId);
-    Task<Account?> GetByClientAndCurrencyAsync(string clientId, string currency);
-    Task<IReadOnlyList<Account>> ListAsync(string? clientId, int page, int pageSize);
-    Task<int> CountAsync(string? clientId);
-    Task AddAsync(Account account);
-    Task UpdateAsync(Account account);
+    Task<Account?> GetByIdAsync(int id, CancellationToken cancellationToken);
+    Task<IEnumerable<Account?>> GetByClientIdAsync(string clientId, CancellationToken cancellationToken);
+    Task<Account?> GetByClientAndCurrencyAsync(string clientId, string currency, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Account>> ListAsync(string? clientId, int page, int pageSize, CancellationToken cancellationToken);
+    Task<int> CountAsync(string? clientId, CancellationToken cancellationToken);
+    Task AddAsync(Account account, CancellationToken cancellationToken);
+    Task UpdateAsync(Account account, CancellationToken cancellationToken);
 }
 

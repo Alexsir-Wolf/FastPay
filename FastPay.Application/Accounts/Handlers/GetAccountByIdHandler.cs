@@ -18,7 +18,9 @@ public sealed class GetAccountByIdHandler : IRequestHandler<GetAccountByIdQuery,
 
     public async Task<CommandResult<AccountDto>> Handle(GetAccountByIdQuery request, CancellationToken cancellationToken)
     {
-        var account = await _accountRepository.GetByIdAsync(request.AccountId);
+        var account = await _accountRepository.GetByIdAsync(
+            request.AccountId,
+            cancellationToken);
 
         if (account is null)        
             return CommandResult<AccountDto>.Fail(["Conta não encontrada."]);        

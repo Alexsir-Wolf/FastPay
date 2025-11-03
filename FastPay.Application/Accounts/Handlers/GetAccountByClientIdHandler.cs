@@ -19,7 +19,9 @@ public sealed class GetAccountByClientIdHandler : IRequestHandler<GetAccountByCl
     public async Task<CommandResult<IEnumerable<AccountDto>>> Handle(
         GetAccountByClientIdQuery request, CancellationToken cancellationToken)
     {
-        var accounts = await _accountRepository.GetByClientIdAsync(request.clientId);
+        var accounts = await _accountRepository.GetByClientIdAsync(
+            request.clientId, 
+            cancellationToken);
 
         if (accounts is null || !accounts.Any())
             return CommandResult<IEnumerable<AccountDto>>.Fail(["Conta não encontrada."]);

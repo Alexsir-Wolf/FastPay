@@ -54,9 +54,10 @@ public class AccountsV1EndPoints : CarterModule
 
     private async Task<IResult> CreateAccount(
         [FromBody] CreateAccountCommand command, 
-        [FromServices] IMediator mediator)
+        [FromServices] IMediator mediator,
+        CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(command, cancellationToken);
 
         if (!result.Success)
             return Results.BadRequest(result);
@@ -67,10 +68,11 @@ public class AccountsV1EndPoints : CarterModule
 
     private static async Task<IResult> GetAccountById(
         [FromRoute] int id,
-        [FromServices] IMediator mediator)
+        [FromServices] IMediator mediator,
+        CancellationToken cancellationToken)
     {
         var query = new GetAccountByIdQuery(id);
-        var result = await mediator.Send(query);
+        var result = await mediator.Send(query, cancellationToken);
 
         if (!result.Success)
             return Results.NotFound(result);
@@ -79,11 +81,12 @@ public class AccountsV1EndPoints : CarterModule
     }
 
     private static async Task<IResult> GetAccountByClientId(
-    [FromRoute] string clientId,
-    [FromServices] IMediator mediator)
+        [FromRoute] string clientId,
+        [FromServices] IMediator mediator,
+        CancellationToken cancellationToken)
     {
         var query = new GetAccountByClientIdQuery(clientId);
-        var result = await mediator.Send(query);
+        var result = await mediator.Send(query, cancellationToken);
 
         if (!result.Success)
             return Results.NotFound(result);
@@ -95,21 +98,23 @@ public class AccountsV1EndPoints : CarterModule
         [FromQuery] string? clientId,
         [FromQuery] int page,
         [FromQuery] int pageSize,
-        [FromServices] IMediator mediator)
+        [FromServices] IMediator mediator,
+        CancellationToken cancellationToken)
     {
         var query = new ListAccountsQuery(clientId, page, pageSize);
-        var result = await mediator.Send(query);
+        var result = await mediator.Send(query, cancellationToken);
         return Results.Ok(result);
     }
 
     private static async Task<IResult> UpdateAccountStatus(
         [FromRoute] int id,
         [FromBody] UpdateAccountStatusRequest request,
-        [FromServices] IMediator mediator) 
+        [FromServices] IMediator mediator,
+        CancellationToken cancellationToken) 
     {  
 
         var command = new UpdateAccountStatusCommand(id, request.Status);
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(command, cancellationToken);
        
         if (!result.Success)
             return Results.BadRequest(result);

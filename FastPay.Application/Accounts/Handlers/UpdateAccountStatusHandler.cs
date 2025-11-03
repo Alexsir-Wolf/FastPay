@@ -23,14 +23,18 @@ public sealed class UpdateAccountStatusHandler : IRequestHandler<UpdateAccountSt
         UpdateAccountStatusCommand request,
         CancellationToken cancellationToken)
     {
-        var account = await _accountRepository.GetByIdAsync(request.AccountId);
+        var account = await _accountRepository.GetByIdAsync(
+            request.AccountId,
+            cancellationToken);
 
         if (account is null)        
             return CommandResult<AccountDto>.Fail(["Conta não encontrada."]);
         
         account.ChangeStatus(request.Status);
 
-        await _accountRepository.UpdateAsync(account);
+        await _accountRepository.UpdateAsync(
+            account,
+            cancellationToken);
 
         await _accountRepository.UnitOfWork.CommitAsync(cancellationToken);
 

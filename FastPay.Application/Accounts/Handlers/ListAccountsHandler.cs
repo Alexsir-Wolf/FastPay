@@ -21,8 +21,15 @@ public sealed class ListAccountsHandler : IRequestHandler<ListAccountsQuery, Com
         var page = request.Page <= 0 ? 1 : request.Page;
         var size = request.PageSize <= 0 ? 10 : request.PageSize;
 
-        var total = await _accountRepository.CountAsync(request.ClientId);
-        var items = await _accountRepository.ListAsync(request.ClientId, page, size);
+        var total = await _accountRepository.CountAsync(
+            request.ClientId,
+            cancellationToken);
+
+        var items = await _accountRepository.ListAsync(
+            request.ClientId, 
+            page, 
+            size,
+            cancellationToken);
 
         var dto = new PagedResult<AccountDto>
         {

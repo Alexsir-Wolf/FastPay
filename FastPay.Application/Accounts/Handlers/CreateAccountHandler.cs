@@ -22,11 +22,17 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Comman
         _logger = logger;
     }
 
-    public async Task<CommandResult<CreateAccountDto>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<CommandResult<CreateAccountDto>> Handle(
+        CreateAccountCommand request, 
+        CancellationToken cancellationToken)
     {
         _logger.LogInformation("Criando nova conta para o cliente {ClientId}", request.ClientId);
 
-        var existing = await _accountRepository.GetByClientAndCurrencyAsync(request.ClientId, request.Currency);
+        var existing = await _accountRepository.GetByClientAndCurrencyAsync(
+            request.ClientId, 
+            request.Currency, 
+            cancellationToken);
+
         if (existing is not null)
         { 
             if (existing.Status != AccountStatus.Blocked)            
@@ -40,7 +46,7 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Comman
             creditLimit: new Money(request.CreditLimit)
         );
 
-        await _accountRepository.AddAsync(account);
+        await _accountRepository.AddAsync(account, cancellationToken);
 
         await _accountRepository.UnitOfWork.CommitAsync(cancellationToken);
 
