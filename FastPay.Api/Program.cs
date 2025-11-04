@@ -38,6 +38,7 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddCarter();
+    builder.Services.AddHealthChecks();
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo
