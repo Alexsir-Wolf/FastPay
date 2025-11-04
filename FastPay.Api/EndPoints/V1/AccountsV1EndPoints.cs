@@ -3,7 +3,8 @@ using FastPay.Application.Accounts.Commands;
 using FastPay.Application.Accounts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using FastPay.Domain.Enums;
+using FastPay.Application.Accounts.Dtos;
+using FastPay.Application.Common;
 
 namespace FastPay.Api.EndPoints.V1;
 
@@ -48,6 +49,13 @@ public class AccountsV1EndPoints : CarterModule
             .WithDescription("Atualiza o status (Active, Blocked, Inactive) da conta informada.")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithOpenApi();
+
+        app.MapGet("/{id:int}/transactions", GetAccountTransactions)
+            .WithSummary("Lista o histórico de transações da conta")
+            .WithDescription("Retorna o histórico paginado de transações da conta informada.")
+            .Produces<CommandResult<PagedResult<TransactionDto>>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
     }
@@ -118,6 +126,22 @@ public class AccountsV1EndPoints : CarterModule
        
         if (!result.Success)
             return Results.BadRequest(result);
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetAccountTransactions(
+        [FromRoute] int id,
+        [FromQuery] int page,
+        [FromQuery] int pageSize,
+        [FromServices] IMediator mediator,
+        CancellationToken cancellationToken)
+    {
+        var query = new ListAccountTransactionsQuery(id, page, pageSize);
+        var result = await mediator.Send(query, cancellationToken);
+
+        if (!result.Success && (result.Errors?.Any(e => e.Contains("Conta não encontrada", StringComparison.OrdinalIgnoreCase)) ?? false))
+            return Results.NotFound(result);
 
         return Results.Ok(result);
     }
