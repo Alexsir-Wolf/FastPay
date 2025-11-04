@@ -34,4 +34,32 @@ public class TransactionRepository : ITransactionRepository
                     && t.Operation == operation.ToLower(), 
                     cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Transaction>> ListByAccountAsync(
+        int accountId,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken)
+    {
+        if (page <= 0) page = 1;
+        if (pageSize <= 0) pageSize = 10;
+
+        return await _dbContext.Transactions
+            .AsNoTracking()
+            .Where(t => t.AccountId == accountId)
+            .OrderByDescending(t => t.Timestamp)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<int> CountByAccountAsync(
+        int accountId,
+        CancellationToken cancellationToken)
+    {
+        return await _dbContext.Transactions
+            .AsNoTracking()
+            .Where(t => t.AccountId == accountId)
+            .CountAsync(cancellationToken);
+    }
 }

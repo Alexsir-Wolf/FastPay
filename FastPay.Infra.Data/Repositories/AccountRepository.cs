@@ -29,6 +29,7 @@ public class AccountRepository : IAccountRepository
     {
         return await _dbContext.Accounts
             .AsNoTracking()
+            .Include(a => a.Transactions)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
@@ -58,6 +59,7 @@ public class AccountRepository : IAccountRepository
     {
         return await _dbContext.Accounts
             .AsNoTracking()
+            .Include(a => a.Transactions)
             .Where(a => a.ClientId == clientId)
             .ToListAsync(cancellationToken);
     }
@@ -88,6 +90,7 @@ public class AccountRepository : IAccountRepository
         if (pageSize <= 0) pageSize = 10;
 
         return await query
+            .Include(a => a.Transactions)
             .OrderBy(a => a.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)

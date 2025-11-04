@@ -16,7 +16,11 @@ public static class AccountMappings
             ReservedBalance = account.ReservedBalance.Amount,
             CreditLimit = account.CreditLimit.Amount,
             Status = account.Status.ToString(),
-            CreatedAt = account.CreatedAt
+            CreatedAt = account.CreatedAt,
+            Transactions = account.Transactions
+                .OrderByDescending(t => t.Timestamp)
+                .Select(t => t.ToTransactionDto())
+                .ToList()
         };
     }
 
