@@ -15,5 +15,8 @@
   <Folder Name="/4 - Infra/4.2 - Data/">
     <Project Path="FastPay.Infra.Data/FastPay.Infra.Data.csproj" />
   </Folder>
-  <Folder Name="/5 - Tests/" />
+  <Folder Name="/5 - Tests/">
+    <Project Path="5 - Tests/FastPay.Domain.Tests/FastPay.Domain.Tests.csproj" />
+    <Project Path="5 - Tests/FastPay.Application.Tests/FastPay.Application.Tests.csproj" />
+  </Folder>
 </Solution>
