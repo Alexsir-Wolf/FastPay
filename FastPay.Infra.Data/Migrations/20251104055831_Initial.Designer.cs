@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FastPay.Infra.Data.Migrations
 {
     [DbContext(typeof(FastPayDbContext))]
-    [Migration("20251102193026_Initial")]
+    [Migration("20251104055831_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -87,6 +87,39 @@ namespace FastPay.Infra.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency");
+
+                    b.Property<int?>("DestinationAccountId")
+                        .HasColumnType("integer")
+                        .HasColumnName("destination_account_id");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text")
+                        .HasColumnName("error_message");
+
+                    b.Property<string>("MetadataJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("metadata_json");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("operation");
+
+                    b.Property<string>("ReferenceId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("reference_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("timestamp");
@@ -97,7 +130,9 @@ namespace FastPay.Infra.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("AccountId", "Operation", "ReferenceId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_transactions_idempotency");
 
                     b.ToTable("transactions", (string)null);
                 });
@@ -158,6 +193,24 @@ namespace FastPay.Infra.Data.Migrations
                                 .HasForeignKey("AccountId");
                         });
 
+                    b.OwnsOne("FastPay.Domain.ValueObjects.Money", "UsedCredit", b1 =>
+                        {
+                            b1.Property<int>("AccountId")
+                                .HasColumnType("integer");
+
+                            b1.Property<decimal>("Amount")
+                                .HasPrecision(18, 2)
+                                .HasColumnType("numeric(18,2)")
+                                .HasColumnName("used_credit");
+
+                            b1.HasKey("AccountId");
+
+                            b1.ToTable("accounts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("AccountId");
+                        });
+
                     b.Navigation("AvailableBalance")
                         .IsRequired();
 
@@ -165,6 +218,9 @@ namespace FastPay.Infra.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ReservedBalance")
+                        .IsRequired();
+
+                    b.Navigation("UsedCredit")
                         .IsRequired();
                 });
 

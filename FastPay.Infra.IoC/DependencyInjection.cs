@@ -8,6 +8,10 @@ using System.Reflection;
 using FluentValidation;
 using MediatR;
 using FastPay.Application.Common.Behaviors;
+using FastPay.Application.Common.Events;
+using FastPay.Application.Transactions.Events;
+using FastPay.Application.Transactions.Events.Handlers;
+using FastPay.Infra.IoC.Events;
 
 namespace FastPay.Infra.IoC;
 
@@ -24,6 +28,7 @@ public static class DependencyInjection
             }));
 
         services.AddScoped<IAccountRepository, AccountRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -34,6 +39,14 @@ public static class DependencyInjection
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        // Event bus
+        services.AddSingleton<InMemoryEventBus>();
+        services.AddSingleton<IEventPublisher>(sp => sp.GetRequiredService<InMemoryEventBus>());
+        services.AddHostedService(sp => sp.GetRequiredService<InMemoryEventBus>());
+
+        // Handlers de eventos
+        services.AddTransient<IEventHandler<TransactionProcessedEvent>, LoggingTransactionProcessedHandler>();
 
         return services;
     }

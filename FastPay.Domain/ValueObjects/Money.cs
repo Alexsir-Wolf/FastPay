@@ -21,6 +21,19 @@ public sealed class Money
         return new Money(0);
     }
 
+    public static Money FromCents(long cents)
+    {
+        if (cents < 0)
+            throw new ArgumentException("O valor não pode ser negativo.");
+        var major = cents / 100m;
+        return new Money(major);
+    }
+
+    public long ToCents()
+    {
+        return (long)(Amount * 100m);
+    }
+
     public Money Add(Money other)
     {
         return new Money(Amount + other.Amount);

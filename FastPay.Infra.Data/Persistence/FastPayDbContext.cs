@@ -16,4 +16,5 @@ public class FastPayDbContext : DbContext
     }
 
     public DbSet<Account> Accounts { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
 }
