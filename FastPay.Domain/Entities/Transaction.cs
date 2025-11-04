@@ -13,7 +13,7 @@ public class Transaction : Entity<int>
         int accountId,
         decimal amount,
         string currency,
-        TransactionOperation operation,
+        string operation,
         string referenceId,
         int? destinationAccountId = null,
         string? metadataJson = null)
@@ -21,7 +21,7 @@ public class Transaction : Entity<int>
         AccountId = accountId;
         Amount = amount;
         Currency = currency.ToUpperInvariant();
-        Operation = operation;
+        Operation = operation.ToLowerInvariant();
         ReferenceId = referenceId;
         DestinationAccountId = destinationAccountId;
         MetadataJson = metadataJson;
@@ -33,7 +33,7 @@ public class Transaction : Entity<int>
     public int? DestinationAccountId { get; private set; }
     public decimal Amount { get; private set; }
     public string Currency { get; private set; } = string.Empty;
-    public TransactionOperation Operation { get; private set; }
+    public string Operation { get; private set; } = string.Empty;
     public TransactionStatus Status { get; private set; }
     public string ReferenceId { get; private set; } = string.Empty;
     public string? ErrorMessage { get; private set; }

@@ -24,14 +24,14 @@ public class TransactionRepository : ITransactionRepository
     public async Task<Transaction?> GetByReferenceAsync(
         int accountId, 
         string referenceId, 
-        int operation, 
+        string operation, 
         CancellationToken cancellationToken)
     {
         return await _dbContext.Transactions
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.AccountId == accountId 
                     && t.ReferenceId == referenceId 
-                    && (int)t.Operation == operation, 
+                    && t.Operation == operation.ToLower(), 
                     cancellationToken);
     }
 }

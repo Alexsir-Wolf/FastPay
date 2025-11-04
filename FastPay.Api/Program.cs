@@ -3,6 +3,7 @@ using FastPay.Infra.IoC;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using Serilog;
+using FastPay.Api.Middleware;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -42,7 +43,7 @@ try
         {
             Title = "FastPay API",
             Version = "v1",
-            Description = "API financeira do FastPay - operações atômicas e seguras."
+            Description = "API financeira do FastPay - operaÃ§Ãµes atÃ´micas e seguras."
         });
     });
 
@@ -53,7 +54,11 @@ try
 
     var app = builder.Build();
 
-    //logging
+    // Global middlewares
+    app.UseMiddleware<CorrelationIdMiddleware>();
+    app.UseMiddleware<GlobalExceptionMiddleware>();
+
+    // logging
     app.UseSerilogRequestLogging(options =>
     {
         options.EnrichDiagnosticContext = (diagCtx, http) =>
@@ -85,4 +90,3 @@ finally
 {
     Log.CloseAndFlush();
 }
-  

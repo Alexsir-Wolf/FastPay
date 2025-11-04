@@ -32,7 +32,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
         builder.Property(t => t.Operation)
             .HasColumnName("operation")
-            .HasConversion<int>();
+            .HasMaxLength(20);
 
         builder.Property(t => t.Status)
             .HasColumnName("status")

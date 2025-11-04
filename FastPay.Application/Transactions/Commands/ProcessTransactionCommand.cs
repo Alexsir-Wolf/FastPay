@@ -1,20 +1,17 @@
 using FastPay.Application.Common;
 using FastPay.Application.Transactions.Dtos;
-using FastPay.Domain.Enums;
 using MediatR;
 
 namespace FastPay.Application.Transactions.Commands;
 
 public record ProcessTransactionCommand(
-    TransactionOperation Operation,
-    int AccountId,
+    string Operation,
     int SourceAccountId,
     int DestinationAccountId,
-    decimal Amount,
+    long Amount,
     string Currency,
     string ReferenceId,
     IDictionary<string, object>? Metadata
     ) : IRequest<CommandResult<ProcessTransactionResponse>>
 { 
 }
-

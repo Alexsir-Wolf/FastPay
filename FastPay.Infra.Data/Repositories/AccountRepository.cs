@@ -32,6 +32,26 @@ public class AccountRepository : IAccountRepository
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
+    public async Task<Account?> GetByIdForUpdateAsync(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        return await _dbContext.Accounts
+            .FromSqlInterpolated($"SELECT * FROM accounts WHERE id = {id} FOR UPDATE")
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<List<Account>> GetByIdsForUpdateAsync(
+        IEnumerable<int> ids,
+        CancellationToken cancellationToken)
+    {
+        var idList = ids.Distinct().OrderBy(x => x).ToArray();
+        if (idList.Length == 0) return new List<Account>();
+        return await _dbContext.Accounts
+            .FromSqlInterpolated($"SELECT * FROM accounts WHERE id = ANY ({idList}) FOR UPDATE")
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<Account>> GetByClientIdAsync(
         string clientId, 
         CancellationToken cancellationToken)
