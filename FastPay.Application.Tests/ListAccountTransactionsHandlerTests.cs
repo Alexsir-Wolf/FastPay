@@ -2,12 +2,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
-using FastPay.Application.Accounts.Handlers;
-using FastPay.Application.Accounts.Queries;
-using FastPay.Domain.Contracts.Repositories;
-using FastPay.Domain.Entities;
 using NSubstitute;
 using Xunit;
+using FastPay.Domain.Contracts.Repositories;
+using FastPay.Application.Accounts.Handlers;
+using FastPay.Application.Accounts.Queries;
+using FastPay.Domain.Entities;
 using FastPay.Domain.ValueObjects;
 
 namespace FastPay.Application.Tests;
