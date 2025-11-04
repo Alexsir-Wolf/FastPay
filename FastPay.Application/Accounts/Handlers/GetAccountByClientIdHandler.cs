@@ -28,6 +28,6 @@ public sealed class GetAccountByClientIdHandler : IRequestHandler<GetAccountByCl
 
         var dtos = accounts.Select(account => account.ToAccountDto());
 
-        return CommandResult<IEnumerable<AccountDto>>.Ok(dtos, "Conta encontrada.");
+        return CommandResult<IEnumerable<AccountDto>>.Ok(dtos);
     }
 }

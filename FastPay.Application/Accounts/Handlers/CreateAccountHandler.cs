@@ -56,6 +56,6 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Comman
 
         var dto = account.ToCreateAccountDto();
 
-        return CommandResult<CreateAccountDto>.Ok(dto, "Conta criada com sucesso.");
+        return CommandResult<CreateAccountDto>.Ok(dto);
     }
 }

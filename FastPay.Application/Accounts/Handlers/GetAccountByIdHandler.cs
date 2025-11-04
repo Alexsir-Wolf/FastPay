@@ -26,6 +26,6 @@ public sealed class GetAccountByIdHandler : IRequestHandler<GetAccountByIdQuery,
             return CommandResult<AccountDto>.Fail(["Conta não encontrada."]);        
 
         var dto = account.ToAccountDto();
-        return CommandResult<AccountDto>.Ok(dto, "Conta encontrada.");
+        return CommandResult<AccountDto>.Ok(dto);
     }
 }

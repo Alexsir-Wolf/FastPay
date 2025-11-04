@@ -39,7 +39,7 @@ public sealed class ListAccountsHandler : IRequestHandler<ListAccountsQuery, Com
             Total = total
         };
 
-        return CommandResult<PagedResult<AccountDto>>.Ok(dto, "Contas listadas.");
+        return CommandResult<PagedResult<AccountDto>>.Ok(dto);
     }
 }
 

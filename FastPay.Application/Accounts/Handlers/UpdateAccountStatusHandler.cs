@@ -41,6 +41,6 @@ public sealed class UpdateAccountStatusHandler : IRequestHandler<UpdateAccountSt
         _logger.LogInformation("Status da conta de {ClientId} alterado para {Status}", account.ClientId, account.Status.ToString());
 
         var dto = account.ToAccountDto();
-        return CommandResult<AccountDto>.Ok(dto, "Conta encontrada.");
+        return CommandResult<AccountDto>.Ok(dto);
     }
 }
