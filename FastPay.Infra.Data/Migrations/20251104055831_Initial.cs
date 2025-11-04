@@ -23,6 +23,7 @@ namespace FastPay.Infra.Data.Migrations
                     available_balance = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     reserved_balance = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     credit_limit = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    used_credit = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
                     status = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -39,7 +40,14 @@ namespace FastPay.Infra.Data.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     account_id = table.Column<int>(type: "integer", nullable: false),
+                    destination_account_id = table.Column<int>(type: "integer", nullable: true),
                     amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
+                    currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    operation = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    reference_id = table.Column<string>(type: "text", nullable: false),
+                    error_message = table.Column<string>(type: "text", nullable: true),
+                    metadata_json = table.Column<string>(type: "jsonb", nullable: true),
                     timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
@@ -62,9 +70,10 @@ namespace FastPay.Infra.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_transactions_account_id",
+                name: "ix_transactions_idempotency",
                 table: "transactions",
-                column: "account_id");
+                columns: new[] { "account_id", "operation", "reference_id" },
+                unique: true);
         }
 
         /// <inheritdoc />
