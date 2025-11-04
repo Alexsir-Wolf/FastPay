@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using Serilog;
 using FastPay.Api.Middleware;
+using Prometheus;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -77,6 +78,10 @@ try
             c.RoutePrefix = "swagger";
         });
     }
+
+    // Prometheus
+    app.UseHttpMetrics();
+    app.MapMetrics();
 
     app.UseHttpsRedirection();
     app.MapCarter();
